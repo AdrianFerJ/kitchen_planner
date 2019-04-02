@@ -4,3 +4,5 @@
 # Visual studio config
 .vscode/**
 
+# Python cache
+__pycache__
