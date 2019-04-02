@@ -1,8 +1,15 @@
 #Python venv
-/venv/
+venv/
 
 # Visual studio config
 .vscode/**
 
 # Python cache
-__pycache__
+__pycache__/
+
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
