@@ -62,7 +62,73 @@ def AllRecipesScrapper(url, soup):
     return recipe_info
 
 
-## ADD more recipe specific scrappers here  
+## ADD more recipe specific scrappers here
+
+def RicardoScrapper(url, soup):
+    """Scrapper for ricardocuisine.com"""
+
+    # Title
+    basic_info = soup.find(class_='recipe-basic-info')
+    title = basic_info.h1.text
+
+    # Time
+    time_list = []
+    for info in basic_info.find(class_='recipe-content').dl.find_all('dd')[:2]:
+        match = re.search(r'\d+\s\w+(\s\d+\s\w+)*', info.text)
+        time_list.append(match[0])
+    time_info = list(zip(['Preparation', 'Cooking'], time_list))
+
+    # Ingredients
+    ingredient_list = []
+    ingredients = soup.find(class_='form-ingredients')
+    for ingredient_label in ingredients.find_all('li'):
+        ingredient = ingredient_label.span.text.replace('\t', '')
+        ingredient_list.append(ingredient)
+
+    # Output
+    recipe_info = {
+        'title':title,
+        'ingredients':ingredient_list,
+        'time_info':time_info,
+        'url':url
+    }
+
+    return recipe_info
+
+
+def MarmitonScrapper(url, soup):
+    """Scrapper for marmiton.org"""
+
+    # Title
+    title = soup.find(class_='main-title').text
+
+    # Time
+    time_prep = soup.find_all(class_='recipe-infos__timmings__value')
+    time_list = []
+    for time in time_prep:
+        match = re.search(r'\d+\s\w+(\s\d+\s\w+)*', time.text)
+        time_list.append(match[0])
+    time_info = list(zip(['Preparation', 'Cooking'], time_list))
+
+    # Ingredients
+    ingredients = soup.find('ul', class_='recipe-ingredients__list')
+    for ingredient in ingredients.find_all('li', class_='recipe-ingredients__list__item'):
+        qty = ingredient.div.find('span', class_='recipe-ingredient-qt').text
+        ing = ingredient.div.find('span', class_='ingredient').text
+        real_ing = qty + ing
+        marmiton_list.append(real_ing)
+
+    recipe_info = {
+        'title': title,
+        'ingredients': marmiton_list,
+        'time_info': time_info,
+        'url': url
+    }
+
+    # Output
+    return recipe_info
+
+
 
 
 """
@@ -70,3 +136,5 @@ def AllRecipesScrapper(url, soup):
 """
 factory = ScrapperFactory()
 factory.register_scrapper('www.allrecipes.com', AllRecipesScrapper)
+factory.register_scrapper('www.ricardocuisine.com', RicardoScrapper)
+factory.register_scrapper('www.marmiton.org', MarmitonScrapper)
